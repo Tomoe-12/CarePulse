@@ -6,6 +6,4 @@ export const UserFormValidation = z.object({
   .max(50,  "Username must be at most 50 characters.",),
  email:z.string().email('invalid email address'),
  phone: z.string().refine((phone)=>/^\+\d{10,15}$/.test(phone),'Invalid phone number')
-
-  
 });
