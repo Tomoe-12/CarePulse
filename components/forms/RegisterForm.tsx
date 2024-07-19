@@ -4,16 +4,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import { Form, FormControl } from "@/components/ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { useState } from "react";
-import { UserFormValidation } from "@/lib/validation";
+import { PatientFormValidation, UserFormValidation } from "@/lib/validation";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/lib/actions/patient.actions";
+import { createUser, registerPatient } from "@/lib/actions/patient.actions";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Doctors, GenderOptions, IdentificationTypes } from "@/constants";
+import {
+  Doctors,
+  GenderOptions,
+  IdentificationTypes,
+  PatientFormDefaultValues,
+} from "@/constants";
 import { Label } from "../ui/label";
 import { SelectItem } from "../ui/select";
 import Image from "next/image";
@@ -23,33 +27,43 @@ export const RegisterForm = ({ user }: { user: User }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof UserFormValidation>>({
-    resolver: zodResolver(UserFormValidation),
+  const form = useForm<z.infer<typeof PatientFormValidation>>({
+    resolver: zodResolver(PatientFormValidation),
     defaultValues: {
+      ...PatientFormDefaultValues,
       name: "",
       email: "",
       phone: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
+  const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
 
+    let formData ;
+    
+    if(values.identificationDocument && values.identificationDocument.length > 0){
+      const blobFile = new Blob([values.identificationDocument[0]],{
+        type: values.identificationDocument[0].type,
+      })
+
+      formData = new FormData()
+      formData.append('blobFile',blobFile)
+      formData.append('fileName',values.identificationDocument[0].name)
+    }
+
     try {
-      const user = {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-      };
-      console.log("user", user);
-
-      const newUser = await createUser(user);
-
-      if (newUser) {
-        console.log("newUser : ", newUser);
-
-        router.push(`/patients/${newUser.$id}/register`);
+      const patientData = {
+        ...values,
+        userId : user.$id,
+        birthDate : new Date(values.birthDate),
+        identificationDocument : formData,
       }
+
+      // @ts-ignore
+      const patient = await registerPatient(patientData)
+
+      if(patient) router.push(`/patients/${user.$id}/new-appointment`)
     } catch (error) {
       console.log(error);
     }
@@ -221,24 +235,6 @@ export const RegisterForm = ({ user }: { user: User }) => {
 
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            control={form.control}
-            name="insuranceProvider"
-            label="Insurance Provider"
-            placeholder="BlueCross BlueShield"
-          />
-
-          <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            control={form.control}
-            name="insurancePolicyNumber"
-            label="Insurance Policy Number"
-            placeholder="ABC1234565789"
-          />
-        </div>
-
-        <div className="flex flex-col gap-6 xl:flex-row">
-          <CustomFormField
             fieldType={FormFieldType.TEXTAREA}
             control={form.control}
             name="allergies"
@@ -301,7 +297,9 @@ export const RegisterForm = ({ user }: { user: User }) => {
             placeholder="123456789"
           />
 
-          <CustomFormField
+       
+        </div>
+        <CustomFormField
             fieldType={FormFieldType.SKELETON}
             control={form.control}
             name="identificationDocument"
@@ -312,7 +310,6 @@ export const RegisterForm = ({ user }: { user: User }) => {
               </FormControl>
             )}
           />
-        </div>
 
         <section className="space-y-6 ">
           <div className="mb-9 space-y-1"></div>
