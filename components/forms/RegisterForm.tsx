@@ -40,30 +40,33 @@ export const RegisterForm = ({ user }: { user: User }) => {
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
 
-    let formData ;
-    
-    if(values.identificationDocument && values.identificationDocument.length > 0){
-      const blobFile = new Blob([values.identificationDocument[0]],{
-        type: values.identificationDocument[0].type,
-      })
+    let formData;
 
-      formData = new FormData()
-      formData.append('blobFile',blobFile)
-      formData.append('fileName',values.identificationDocument[0].name)
+    if (
+      values.identificationDocument &&
+      values.identificationDocument.length > 0
+    ) {
+      const blobFile = new Blob([values.identificationDocument[0]], {
+        type: values.identificationDocument[0].type,
+      });
+
+      formData = new FormData();
+      formData.append("blobFile", blobFile);
+      formData.append("fileName", values.identificationDocument[0].name);
     }
 
     try {
       const patientData = {
         ...values,
-        userId : user.$id,
-        birthDate : new Date(values.birthDate),
-        identificationDocument : formData,
-      }
+        userId: user.$id,
+        birthDate: new Date(values.birthDate),
+        identificationDocument: formData,
+      };
 
       // @ts-ignore
-      const patient = await registerPatient(patientData)
+      const patient = await registerPatient(patientData);
 
-      if(patient) router.push(`/patients/${user.$id}/new-appointment`)
+      if (patient) router.push(`/patients/${user.$id}/new-appointment`);
     } catch (error) {
       console.log(error);
     }
@@ -97,6 +100,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           iconAlt="user"
         />
 
+        {/* email fand phone  */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.INPUT}
@@ -117,6 +121,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           />
         </div>
 
+        {/* birthdate and gender */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.DATE_PICKER}
@@ -152,6 +157,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           />
         </div>
 
+        {/* address and occupation */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.INPUT}
@@ -170,6 +176,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           />
         </div>
 
+        {/* emergencycontactName and contact number */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.INPUT}
@@ -192,6 +199,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           <h2 className="sub-header">Medical Information</h2>
         </section>
 
+        {/* primary physician */}
         <CustomFormField
           fieldType={FormFieldType.SELECT}
           control={form.control}
@@ -215,6 +223,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           ))}
         </CustomFormField>
 
+        {/* insurance provider and insurance policyl number */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.INPUT}
@@ -233,6 +242,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           />
         </div>
 
+        {/* allergies and current medication */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.TEXTAREA}
@@ -251,6 +261,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           />
         </div>
 
+        {/* family medical history and past medical history */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.TEXTAREA}
@@ -274,6 +285,7 @@ export const RegisterForm = ({ user }: { user: User }) => {
           <h2 className="sub-header">Identification and Verification</h2>
         </section>
 
+        {/* identification type and identification number */}
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
             fieldType={FormFieldType.SELECT}
@@ -296,26 +308,27 @@ export const RegisterForm = ({ user }: { user: User }) => {
             label="Identification Number"
             placeholder="123456789"
           />
-
-       
         </div>
+
+        {/* identification doc  */}
         <CustomFormField
-            fieldType={FormFieldType.SKELETON}
-            control={form.control}
-            name="identificationDocument"
-            label="Sanned copy of identification document"
-            renderSkeleton={(field) => (
-              <FormControl>
-                <FileUploader files={field.value} onChange={field.onChange} />
-              </FormControl>
-            )}
-          />
+          fieldType={FormFieldType.SKELETON}
+          control={form.control}
+          name="identificationDocument"
+          label="Sanned copy of identification document"
+          renderSkeleton={(field) => (
+            <FormControl>
+              <FileUploader files={field.value} onChange={field.onChange} />
+            </FormControl>
+          )}
+        />
 
         <section className="space-y-6 ">
           <div className="mb-9 space-y-1"></div>
           <h2 className="sub-header">Consent and Privacy</h2>
         </section>
 
+        {/* treatment constent , disclosureconsent , privacy consent */}
         <CustomFormField
           fieldType={FormFieldType.CHECKBOX}
           control={form.control}

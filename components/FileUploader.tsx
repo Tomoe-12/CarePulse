@@ -6,7 +6,7 @@ import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 type FileUploaderProps = {
-  files: File[] | undefined;
+  files: File[] | undefined; 
   onChange: (files: File[]) => void;
 };
 
@@ -50,7 +50,7 @@ const FileUploader = ({ files, onChange }: FileUploaderProps) => {
       {isDragActive ? (
         <p>Drop the files here ...</p>
       ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
+        <p>Drag &apos;n&apos; drop some files here, or click to select files</p>
       )}
     </div>
   );

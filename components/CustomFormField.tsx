@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 import { Checkbox } from "./ui/checkbox";
 
+
 export enum FormFieldType {
   INPUT = "input",
   TEXTAREA = "textarea",
@@ -80,7 +81,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
         <FormControl>
           <PhoneInput
             defaultCountry="MM"
-            placeholder={placeholder}
+            placeholder={props.placeholder}
             international
             withCountryCallingCode
             value={field.value as E164Number | undefined}
@@ -101,11 +102,11 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
           />
           <FormControl>
             <DatePicker
-              selected={field.date}
+              showTimeSelect={props.showTimeSelect ?? false}
+              selected={field.value}
               onChange={(date) => field.onChange(date)}
-              dateFormat={dateFormat ?? "MM/dd/yyyy"}
-              showTimeSelect={showTimeSelect ?? false}
               timeInputLabel="Time:"
+              dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
               wrapperClassName="date-picker"
             />
           </FormControl>
