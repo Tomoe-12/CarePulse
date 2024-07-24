@@ -60,8 +60,6 @@ export const AppointmentForm = ({
 
     try {
       if (type === "create" && patientId) {
-        console.log("im here");
-
         const appointmentData = {
           userId,
           patient: patientId,
@@ -73,12 +71,11 @@ export const AppointmentForm = ({
         };
 
         const appointment = await createAppointment(appointmentData);
-        console.log("im here");
 
         if (appointment) {
           form.reset();
           router.push(
-            `/patients/${userId}/new-appointment/success?appointmentId=${appointment.id}`
+            `/patients/${userId}/new-appointment/success?appointmentId=${appointment?.$id}`
           );
         }
       }
