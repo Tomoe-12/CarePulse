@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { getPatient } from "@/lib/actions/patient.actions";
 import Image from "next/image";
 import Link from "next/link";
+import * as Sentry from '@sentry/nextjs'
 
 export default async function NewAppointment({
   params: { userId },
 }: SearchParamProps) {
 
     const patient = await getPatient(userId)
+    Sentry.metrics.set("user_view_new-appointment", patient.name);
     
 
   return (
